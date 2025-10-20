@@ -31,6 +31,8 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
+        /* 캔버스가 부모 높이를 정확히 채우도록 보장 (보조용) */
+        #trendChart { width: 100% !important; height: 100% !important; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-full">
@@ -185,7 +187,10 @@
             <!-- 일자별 처리 트렌드 차트 -->
             <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">일자별 처리 트렌드</h3>
-                <canvas id="trendChart" width="400" height="200"></canvas>
+                <!-- 변경: 고정 높이 컨테이너 + 캔버스 100% 채우기 -->
+                <div class="relative h-64 sm:h-72 lg:h-80">
+                    <canvas id="trendChart" class="!w-full !h-full"></canvas>
+                </div>
             </div>
         </div>
 
@@ -304,7 +309,7 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
+                maintainAspectRatio: false, // 부모 높이에 맞춰 채움
                 scales: {
                     y: {
                         beginAtZero: true
@@ -361,5 +366,7 @@
             closeNotification();
         }, 5000);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99150240b565326b',t:'MTc2MDkyNjU0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99150240b565326b',t:'MTc2MDkyNjU0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
 </html>
