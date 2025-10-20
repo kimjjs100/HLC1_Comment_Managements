@@ -40,8 +40,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
-                    <h1 class="text-xl font-bold text-gray-900">대선주 코멘트 대응 관리 시스템</h1>
-                    <span class="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">Main Dashboard</span>
+                    <h1 class="text-xl font-bold text-gray-900">[2025-HLC1-5조] 대선주 코멘트 대응 관리 시스템</h1>
+                    <span class="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">A. Main Dashboard</span>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="relative">
@@ -70,7 +70,7 @@
                 </div>
                 <div class="ml-3 flex-1">
                     <h3 class="text-sm font-medium text-gray-900">신규 코멘트 알림</h3>
-                    <p class="mt-1 text-sm text-gray-600">현대중공업 - 선박 설계 변경 요청</p>
+                    <p class="mt-1 text-sm text-gray-600"> [HMD-기본계획부] - 선박 설계 변경 요청</p>
                     <p class="mt-1 text-xs text-gray-500">우선순위: 높음 | 2분 전</p>
                 </div>
                 <button onclick="closeNotification()" class="ml-4 text-gray-400 hover:text-gray-600">
@@ -103,9 +103,10 @@
                 </div>
                 <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     <option>전체 선주</option>
-                    <option>현대중공업</option>
-                    <option>대우조선해양</option>
-                    <option>삼성중공업</option>
+                    <option>장금상선(SINOKOR)</option>
+                    <option>SK해운</option>
+                    <option>HMM</option>
+                    <option>Evergreen Marine Corporation (Taiwan) Ltd.</option>
                 </select>
                 <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     <option>전체 프로젝트</option>
@@ -210,7 +211,7 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-sm font-medium text-red-800">마감 임박 (D-1)</p>
-                                <p class="text-sm text-red-700">현대중공업 - 엔진실 배치 변경</p>
+                                <p class="text-sm text-red-700">[HHI-구조설계부] - 엔진실 배치 변경</p>
                             </div>
                             <span class="px-2 py-1 bg-red-200 text-red-800 text-xs rounded-full">긴급</span>
                         </div>
@@ -220,7 +221,7 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-sm font-medium text-orange-800">마감 임박 (D-3)</p>
-                                <p class="text-sm text-orange-700">삼성중공업 - 안전 규정 검토</p>
+                                <p class="text-sm text-orange-700">[KSOE-HSE팀] - 안전 규정 검토</p>
                             </div>
                             <span class="px-2 py-1 bg-orange-200 text-orange-800 text-xs rounded-full">주의</span>
                         </div>
@@ -229,8 +230,8 @@
                     <div class="border-l-4 border-purple-500 bg-purple-50 p-3 rounded">
                         <div class="flex justify-between items-start">
                             <div>
-                                <p class="text-sm font-medium text-purple-800">SLA 초과</p>
-                                <p class="text-sm text-purple-700">대우조선해양 - 설계 승인 지연</p>
+                                <p class="text-sm font-medium text-purple-800">공정기한 초과</p>
+                                <p class="text-sm text-purple-700">[HHI 알리미] - 한국선급(KR) 설계 승인 지연</p>
                             </div>
                             <span class="px-2 py-1 bg-purple-200 text-purple-800 text-xs rounded-full">지연</span>
                         </div>
@@ -250,7 +251,7 @@
                         <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                         <div class="flex-1">
                             <p class="text-sm text-gray-900">새 코멘트 등록</p>
-                            <p class="text-xs text-gray-500">현대중공업 - 선박 설계 변경 요청</p>
+                            <p class="text-xs text-gray-500">[HMD-기본계획부] - 선박 설계 변경 요청</p>
                             <p class="text-xs text-gray-400">2분 전</p>
                         </div>
                     </div>
@@ -259,7 +260,7 @@
                         <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                         <div class="flex-1">
                             <p class="text-sm text-gray-900">코멘트 완료</p>
-                            <p class="text-xs text-gray-500">삼성중공업 - 안전 점검 완료</p>
+                            <p class="text-xs text-gray-500">[KSOE-HSE팀] - 안전 점검 완료</p>
                             <p class="text-xs text-gray-400">5분 전</p>
                         </div>
                     </div>
@@ -268,7 +269,7 @@
                         <div class="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
                         <div class="flex-1">
                             <p class="text-sm text-gray-900">상태 변경</p>
-                            <p class="text-xs text-gray-500">대우조선해양 - 검토중 → 승인요청</p>
+                            <p class="text-xs text-gray-500">[HHI-기본설계1부] KR 검토중 → 승인요청</p>
                             <p class="text-xs text-gray-400">8분 전</p>
                         </div>
                     </div>
@@ -277,12 +278,197 @@
                         <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                         <div class="flex-1">
                             <p class="text-sm text-gray-900">새 코멘트 등록</p>
-                            <p class="text-xs text-gray-500">현대중공업 - 품질 검사 요청</p>
+                            <p class="text-xs text-gray-500">[HHI-협력사1] - 품질 검사 요청</p>
                             <p class="text-xs text-gray-400">12분 전</p>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- 메인 콘텐츠 영역 -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- 아이젠하워 매트릭스 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">내용분석 기반 위험도 추정</h3>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">AI 분석</span>
+                            <button onclick="refreshRiskAnalysis()" class="p-1 text-gray-400 hover:text-gray-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <!-- 1사분면: 긴급하고 중요함 (Do First) -->
+                        <div class="border-2 border-red-300 bg-red-50 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="text-sm font-semibold text-red-800">긴급하고 중요함</h4>
+                                <span class="text-xs bg-red-200 text-red-800 px-2 py-1 rounded-full">즉시 처리</span>
+                            </div>
+                            <div class="space-y-2" id="quadrant1">
+                                <div class="bg-white border border-red-200 rounded p-2 cursor-pointer hover:bg-red-25" onclick="selectComment('CM-2024-0156')">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-xs font-medium text-red-900">CM-2024-0156</span>
+                                        <span class="text-xs text-red-600">위험도: 95%</span>
+                                    </div>
+                                    <p class="text-xs text-red-700">파이프 라인 간섭으로 인한 안전 문제</p>
+                                    <div class="flex items-center mt-1 space-x-2">
+                                        <span class="text-xs bg-red-100 text-red-700 px-1 rounded">긴급성: 높음</span>
+                                        <span class="text-xs bg-red-100 text-red-700 px-1 rounded">중요도: 높음</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white border border-red-200 rounded p-2 cursor-pointer hover:bg-red-25" onclick="selectComment('CM-2024-0143')">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-xs font-medium text-red-900">CM-2024-0143</span>
+                                        <span class="text-xs text-red-600">위험도: 88%</span>
+                                    </div>
+                                    <p class="text-xs text-red-700">구조 강도 부족 - 즉시 보강 필요</p>
+                                    <div class="flex items-center mt-1 space-x-2">
+                                        <span class="text-xs bg-red-100 text-red-700 px-1 rounded">긴급성: 높음</span>
+                                        <span class="text-xs bg-red-100 text-red-700 px-1 rounded">중요도: 높음</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 2사분면: 중요하지만 긴급하지 않음 (Schedule) -->
+                        <div class="border-2 border-orange-300 bg-orange-50 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="text-sm font-semibold text-orange-800">중요하지만 긴급하지 않음</h4>
+                                <span class="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded-full">계획 수립</span>
+                            </div>
+                            <div class="space-y-2" id="quadrant2">
+                                <div class="bg-white border border-orange-200 rounded p-2 cursor-pointer hover:bg-orange-25" onclick="selectComment('CM-2024-0134')">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-xs font-medium text-orange-900">CM-2024-0134</span>
+                                        <span class="text-xs text-orange-600">위험도: 72%</span>
+                                    </div>
+                                    <p class="text-xs text-orange-700">장기 내구성 개선 방안 검토</p>
+                                    <div class="flex items-center mt-1 space-x-2">
+                                        <span class="text-xs bg-orange-100 text-orange-700 px-1 rounded">긴급성: 낮음</span>
+                                        <span class="text-xs bg-orange-100 text-orange-700 px-1 rounded">중요도: 높음</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white border border-orange-200 rounded p-2 cursor-pointer hover:bg-orange-25" onclick="selectComment('CM-2024-0128')">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-xs font-medium text-orange-900">CM-2024-0128</span>
+                                        <span class="text-xs text-orange-600">위험도: 65%</span>
+                                    </div>
+                                    <p class="text-xs text-orange-700">효율성 향상을 위한 설계 최적화</p>
+                                    <div class="flex items-center mt-1 space-x-2">
+                                        <span class="text-xs bg-orange-100 text-orange-700 px-1 rounded">긴급성: 낮음</span>
+                                        <span class="text-xs bg-orange-100 text-orange-700 px-1 rounded">중요도: 높음</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 3사분면: 긴급하지만 중요하지 않음 (Delegate) -->
+                        <div class="border-2 border-yellow-300 bg-yellow-50 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="text-sm font-semibold text-yellow-800">긴급하지만 중요하지 않음</h4>
+                                <span class="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full">위임 처리</span>
+                            </div>
+                            <div class="space-y-2" id="quadrant3">
+                                <div class="bg-white border border-yellow-200 rounded p-2 cursor-pointer hover:bg-yellow-25" onclick="selectComment('CM-2024-0121')">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-xs font-medium text-yellow-900">CM-2024-0121</span>
+                                        <span class="text-xs text-yellow-600">위험도: 45%</span>
+                                    </div>
+                                    <p class="text-xs text-yellow-700">문서 양식 수정 요청</p>
+                                    <div class="flex items-center mt-1 space-x-2">
+                                        <span class="text-xs bg-yellow-100 text-yellow-700 px-1 rounded">긴급성: 높음</span>
+                                        <span class="text-xs bg-yellow-100 text-yellow-700 px-1 rounded">중요도: 낮음</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white border border-yellow-200 rounded p-2 cursor-pointer hover:bg-yellow-25" onclick="selectComment('CM-2024-0115')">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-xs font-medium text-yellow-900">CM-2024-0115</span>
+                                        <span class="text-xs text-yellow-600">위험도: 38%</span>
+                                    </div>
+                                    <p class="text-xs text-yellow-700">회의록 형식 변경 요청</p>
+                                    <div class="flex items-center mt-1 space-x-2">
+                                        <span class="text-xs bg-yellow-100 text-yellow-700 px-1 rounded">긴급성: 높음</span>
+                                        <span class="text-xs bg-yellow-100 text-yellow-700 px-1 rounded">중요도: 낮음</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 4사분면: 긴급하지도 중요하지도 않음 (Eliminate) -->
+                        <div class="border-2 border-green-300 bg-green-50 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="text-sm font-semibold text-green-800">긴급하지도 중요하지도 않음</h4>
+                                <span class="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full">후순위</span>
+                            </div>
+                            <div class="space-y-2" id="quadrant4">
+                                <div class="bg-white border border-green-200 rounded p-2 cursor-pointer hover:bg-green-25" onclick="selectComment('CM-2024-0108')">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-xs font-medium text-green-900">CM-2024-0108</span>
+                                        <span class="text-xs text-green-600">위험도: 22%</span>
+                                    </div>
+                                    <p class="text-xs text-green-700">색상 변경 제안</p>
+                                    <div class="flex items-center mt-1 space-x-2">
+                                        <span class="text-xs bg-green-100 text-green-700 px-1 rounded">긴급성: 낮음</span>
+                                        <span class="text-xs bg-green-100 text-green-700 px-1 rounded">중요도: 낮음</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white border border-green-200 rounded p-2 cursor-pointer hover:bg-green-25" onclick="selectComment('CM-2024-0102')">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-xs font-medium text-green-900">CM-2024-0102</span>
+                                        <span class="text-xs text-green-600">위험도: 15%</span>
+                                    </div>
+                                    <p class="text-xs text-green-700">로고 위치 조정 요청</p>
+                                    <div class="flex items-center mt-1 space-x-2">
+                                        <span class="text-xs bg-green-100 text-green-700 px-1 rounded">긴급성: 낮음</span>
+                                        <span class="text-xs bg-green-100 text-green-700 px-1 rounded">중요도: 낮음</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 분석 요약 -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="text-sm font-semibold text-gray-900 mb-3">AI 분석 요약</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-red-600">2건</div>
+                                <div class="text-xs text-gray-600">즉시 처리</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-orange-600">2건</div>
+                                <div class="text-xs text-gray-600">계획 수립</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-yellow-600">2건</div>
+                                <div class="text-xs text-gray-600">위임 처리</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-green-600">2건</div>
+                                <div class="text-xs text-gray-600">후순위</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                            <div class="flex items-start space-x-2">
+                                <svg class="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-xs font-medium text-blue-800">추천 액션 플랜</p>
+                                    <p class="text-xs text-blue-700 mt-1">1. 즉시 처리 항목 2건을 우선 해결하세요. 2. 중요한 장기 과제는 다음 주 계획에 포함하세요. 3. 위임 가능한 업무는 적절한 담당자에게 배정하세요.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
         </div>
     </main>
 
