@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대선주 코멘트 대응 관리 시스템 - 반복 패턴 및 분석 뷰</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .pattern-card {
+            transition: all 0.3s ease;
+        }
+        .pattern-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .trend-indicator {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .insight-badge {
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        .heatmap-cell {
+            transition: all 0.2s ease;
+        }
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        .recommendation-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .filter-tab {
+            transition: all 0.2s ease;
+        }
+        .filter-tab.active {
+            background: #6366f1;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-full">
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <button onclick="goBack()" class="mr-4 p-2 text-gray-400 hover:text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-xl font-bold text-gray-900">반복 패턴 및 분석</h1>
+                    <span class="ml-3 px-2 py-1 bg-indigo-100 text-indigo-800 text-xs font-medium rounded-full">AI 분석</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex bg-gray-100 rounded-lg p-1">
+                        <button onclick="setTimeRange('week')" class="filter-tab px-3 py-1 text-sm rounded active">주간</button>
+                        <button onclick="setTimeRange('month')" class="filter-tab px-3 py-1 text-sm rounded">월간</button>
+                        <button onclick="setTimeRange('quarter')" class="filter-tab px-3 py-1 text-sm rounded">분기</button>
+                        <button onclick="setTimeRange('year')" class="filter-tab px-3 py-1 text-sm rounded">연간</button>
+                    </div>
+                    <button onclick="exportReport()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">리포트 내보내기</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- 핵심 지표 요약 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">반복 패턴 발견</p>
+                        <p class="text-2xl font-bold text-gray-900">23개</p>
+                        <p class="text-xs text-green-600">↑ 15% 증가</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">자동화 가능</p>
+                        <p class="text-2xl font-bold text-gray-900">67%</p>
+                        <p class="text-xs text-blue-600">↑ 8% 개선</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">평균 처리시간</p>
+                        <p class="text-2xl font-bold text-gray-900">2.3일</p>
+                        <p class="text-xs text-green-600">↓ 0.5일 단축</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">위험 패턴</p>
+                        <p class="text-2xl font-bold text-gray-900">5개</p>
+                        <p class="text-xs text-red-600 insight-badge">주의 필요</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- 메인 분석 영역 -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- 코멘트 트렌드 분석 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">코멘트 트렌드 분석</h3>
+                        <div class="flex space-x-2">
+                            <button onclick="changeChartType('line')" class="px-3 py-1 text-sm bg-indigo-100 text-indigo-700 rounded">라인</button>
+                            <button onclick="changeChartType('bar')" class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded">바</button>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 반복 패턴 히트맵 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">반복 패턴 히트맵</h3>
+                    <p class="text-sm text-gray-600 mb-4">선주별, 카테고리별 코멘트 발생 빈도를 시각화합니다</p>
+                    
+                    <div class="overflow-x-auto">
+                        <div class="grid grid-cols-8 gap-1 min-w-full">
+                            <!-- 헤더 -->
+                            <div class="p-2 text-xs font-medium text-gray-700"></div>
+                            <div class="p-2 text-xs font-medium text-gray-700 text-center">설계</div>
+                            <div class="p-2 text-xs font-medium text-gray-700 text-center">안전</div>
+                            <div class="p-2 text-xs font-medium text-gray-700 text-center">품질</div>
+                            <div class="p-2 text-xs font-medium text-gray-700 text-center">일정</div>
+                            <div class="p-2 text-xs font-medium text-gray-700 text-center">비용</div>
+                            <div class="p-2 text-xs font-medium text-gray-700 text-center">규정</div>
+                            <div class="p-2 text-xs font-medium text-gray-700 text-center">기타</div>
+                            
+                            <!-- 현대중공업 -->
+                            <div class="p-2 text-xs font-medium text-gray-700">현대중공업</div>
+                            <div class="heatmap-cell p-2 bg-red-500 text-white text-xs text-center rounded cursor-pointer" title="설계: 45건">45</div>
+                            <div class="heatmap-cell p-2 bg-orange-400 text-white text-xs text-center rounded cursor-pointer" title="안전: 23건">23</div>
+                            <div class="heatmap-cell p-2 bg-yellow-400 text-white text-xs text-center rounded cursor-pointer" title="품질: 12건">12</div>
+                            <div class="heatmap-cell p-2 bg-green-400 text-white text-xs text-center rounded cursor-pointer" title="일정: 8건">8</div>
+                            <div class="heatmap-cell p-2 bg-blue-400 text-white text-xs text-center rounded cursor-pointer" title="비용: 15건">15</div>
+                            <div class="heatmap-cell p-2 bg-purple-400 text-white text-xs text-center rounded cursor-pointer" title="규정: 19건">19</div>
+                            <div class="heatmap-cell p-2 bg-gray-400 text-white text-xs text-center rounded cursor-pointer" title="기타: 6건">6</div>
+                            
+                            <!-- 삼성중공업 -->
+                            <div class="p-2 text-xs font-medium text-gray-700">삼성중공업</div>
+                            <div class="heatmap-cell p-2 bg-orange-400 text-white text-xs text-center rounded cursor-pointer" title="설계: 32건">32</div>
+                            <div class="heatmap-cell p-2 bg-red-500 text-white text-xs text-center rounded cursor-pointer" title="안전: 41건">41</div>
+                            <div class="heatmap-cell p-2 bg-green-400 text-white text-xs text-center rounded cursor-pointer" title="품질: 9건">9</div>
+                            <div class="heatmap-cell p-2 bg-yellow-400 text-white text-xs text-center rounded cursor-pointer" title="일정: 18건">18</div>
+                            <div class="heatmap-cell p-2 bg-blue-400 text-white text-xs text-center rounded cursor-pointer" title="비용: 11건">11</div>
+                            <div class="heatmap-cell p-2 bg-green-400 text-white text-xs text-center rounded cursor-pointer" title="규정: 7건">7</div>
+                            <div class="heatmap-cell p-2 bg-gray-300 text-gray-700 text-xs text-center rounded cursor-pointer" title="기타: 3건">3</div>
+                            
+                            <!-- 대우조선해양 -->
+                            <div class="p-2 text-xs font-medium text-gray-700">대우조선해양</div>
+                            <div class="heatmap-cell p-2 bg-yellow-400 text-white text-xs text-center rounded cursor-pointer" title="설계: 28건">28</div>
+                            <div class="heatmap-cell p-2 bg-green-400 text-white text-xs text-center rounded cursor-pointer" title="안전: 14건">14</div>
+                            <div class="heatmap-cell p-2 bg-red-500 text-white text-xs text-center rounded cursor-pointer" title="품질: 35건">35</div>
+                            <div class="heatmap-cell p-2 bg-blue-400 text-white text-xs text-center rounded cursor-pointer" title="일정: 22건">22</div>
+                            <div class="heatmap-cell p-2 bg-orange-400 text-white text-xs text-center rounded cursor-pointer" title="비용: 16건">16</div>
+                            <div class="heatmap-cell p-2 bg-green-400 text-white text-xs text-center rounded cursor-pointer" title="규정: 9건">9</div>
+                            <div class="heatmap-cell p-2 bg-gray-400 text-white text-xs text-center rounded cursor-pointer" title="기타: 5건">5</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between mt-4">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-xs text-gray-500">낮음</span>
+                            <div class="flex space-x-1">
+                                <div class="w-4 h-4 bg-gray-200 rounded"></div>
+                                <div class="w-4 h-4 bg-green-300 rounded"></div>
+                                <div class="w-4 h-4 bg-yellow-400 rounded"></div>
+                                <div class="w-4 h-4 bg-orange-400 rounded"></div>
+                                <div class="w-4 h-4 bg-red-500 rounded"></div>
+                            </div>
+                            <span class="text-xs text-gray-500">높음</span>
+                        </div>
+                        <button onclick="showHeatmapDetails()" class="text-sm text-indigo-600 hover:text-indigo-800">상세 분석 보기</button>
+                    </div>
+                </div>
+
+                <!-- 패턴 분석 결과 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">발견된 패턴</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="pattern-card border border-red-200 bg-red-50 rounded-lg p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-medium text-red-800 mb-1">고위험 패턴: 파이프 라인 간섭</h4>
+                                    <p class="text-sm text-red-700 mb-2">엔진실 설계 변경 시 파이프 라인 간섭 문제가 반복적으로 발생 (15회)</p>
+                                    <div class="flex items-center space-x-4">
+                                        <span class="text-xs bg-red-200 text-red-800 px-2 py-1 rounded-full">빈도: 높음</span>
+                                        <span class="text-xs bg-red-200 text-red-800 px-2 py-1 rounded-full">영향도: 높음</span>
+                                        <button onclick="showPatternDetails('pipe-interference')" class="text-xs text-red-600 hover:text-red-800 underline">상세보기</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="pattern-card border border-orange-200 bg-orange-50 rounded-lg p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-medium text-orange-800 mb-1">시간 패턴: 금요일 코멘트 급증</h4>
+                                    <p class="text-sm text-orange-700 mb-2">매주 금요일 오후에 코멘트 등록이 40% 증가하는 패턴</p>
+                                    <div class="flex items-center space-x-4">
+                                        <span class="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded-full">빈도: 중간</span>
+                                        <span class="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded-full">영향도: 중간</span>
+                                        <button onclick="showPatternDetails('friday-spike')" class="text-xs text-orange-600 hover:text-orange-800 underline">상세보기</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="pattern-card border border-green-200 bg-green-50 rounded-lg p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-medium text-green-800 mb-1">개선 패턴: 표준 답변 효과</h4>
+                                    <p class="text-sm text-green-700 mb-2">표준 답변 적용 후 유사 코멘트 처리 시간 60% 단축</p>
+                                    <div class="flex items-center space-x-4">
+                                        <span class="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full">빈도: 높음</span>
+                                        <span class="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full">영향도: 긍정적</span>
+                                        <button onclick="showPatternDetails('standard-response')" class="text-xs text-green-600 hover:text-green-800 underline">상세보기</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 사이드바 -->
+            <div class="space-y-6">
+                <!-- AI 추천 사항 -->
+                <div class="recommendation-card rounded-lg shadow p-6 text-white">
+                    <h3 class="text-lg font-semibold mb-4">🤖 AI 추천 사항</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                            <h4 class="text-sm font-medium mb-2">자동화 우선순위</h4>
+                            <p class="text-xs mb-2">파이프 라인 간섭 체크를 자동화하면 처리 시간을 70% 단축할 수 있습니다.</p>
+                            <button onclick="implementAutomation()" class="text-xs bg-white text-indigo-600 px-3 py-1 rounded-full hover:bg-gray-100">구현하기</button>
+                        </div>
+                        
+                        <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                            <h4 class="text-sm font-medium mb-2">예방 조치</h4>
+                            <p class="text-xs mb-2">설계 초기 단계에 안전 간격 가이드라인을 적용하세요.</p>
+                            <button onclick="applyGuideline()" class="text-xs bg-white text-indigo-600 px-3 py-1 rounded-full hover:bg-gray-100">적용하기</button>
+                        </div>
+                        
+                        <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                            <h4 class="text-sm font-medium mb-2">리소스 최적화</h4>
+                            <p class="text-xs mb-2">금요일 오후 인력 배치를 20% 증가시키는 것을 권장합니다.</p>
+                            <button onclick="optimizeResource()" class="text-xs bg-white text-indigo-600 px-3 py-1 rounded-full hover:bg-gray-100">계획하기</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 카테고리별 분석 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">카테고리별 분석</h3>
+                    
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 예측 모델 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">예측 분석</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="border border-gray-200 rounded-lg p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium text-gray-900">다음 주 예상 코멘트</span>
+                                <span class="text-lg font-bold text-indigo-600">47건</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-indigo-600 h-2 rounded-full" style="width: 78%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">신뢰도: 78%</p>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium text-gray-900">위험 코멘트 확률</span>
+                                <span class="text-lg font-bold text-red-600">23%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-600 h-2 rounded-full" style="width: 23%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">파이프 라인 관련 이슈</p>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium text-gray-900">자동 해결 가능</span>
+                                <span class="text-lg font-bold text-green-600">31건</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-600 h-2 rounded-full" style="width: 66%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">표준 답변 적용 가능</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 성과 지표 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">성과 지표</h3>
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">처리 효율성</span>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-16 h-2 bg-gray-200 rounded-full">
+                                    <div class="w-4/5 h-2 bg-green-500 rounded-full"></div>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">85%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">고객 만족도</span>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-16 h-2 bg-gray-200 rounded-full">
+                                    <div class="w-11/12 h-2 bg-blue-500 rounded-full"></div>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">92%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">재발 방지율</span>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-16 h-2 bg-gray-200 rounded-full">
+                                    <div class="w-3/4 h-2 bg-purple-500 rounded-full"></div>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">76%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">비용 절감</span>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-16 h-2 bg-gray-200 rounded-full">
+                                    <div class="w-2/3 h-2 bg-orange-500 rounded-full"></div>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">68%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 차트 초기화
+        let trendChart, categoryChart;
+
+        function initCharts() {
+            // 트렌드 차트
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            trendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+                    datasets: [{
+                        label: '전체 코멘트',
+                        data: [45, 52, 38, 67, 43, 58],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: '반복 패턴',
+                        data: [12, 18, 15, 23, 19, 25],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // 카테고리 차트
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            categoryChart = new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['설계', '안전', '품질', '일정', '비용'],
+                    datasets: [{
+                        data: [35, 25, 20, 12, 8],
+                        backgroundColor: [
+                            '#ef4444',
+                            '#f97316',
+                            '#eab308',
+                            '#22c55e',
+                            '#3b82f6'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        }
+
+        // 페이지 로드 시 차트 초기화
+        document.addEventListener('DOMContentLoaded', initCharts);
+
+        // 시간 범위 설정
+        function setTimeRange(range) {
+            // 모든 탭 비활성화
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 선택된 탭 활성화
+            event.target.classList.add('active');
+            
+            // 데이터 업데이트 (실제 구현에서는 API 호출)
+            updateChartsForTimeRange(range);
+        }
+
+        function updateChartsForTimeRange(range) {
+            // 시뮬레이션된 데이터 업데이트
+            const newData = {
+                week: {
+                    labels: ['월', '화', '수', '목', '금', '토', '일'],
+                    comments: [8, 12, 15, 18, 25, 10, 5],
+                    patterns: [2, 3, 4, 5, 8, 3, 1]
+                },
+                month: {
+                    labels: ['1주', '2주', '3주', '4주'],
+                    comments: [45, 52, 38, 67],
+                    patterns: [12, 18, 15, 23]
+                },
+                quarter: {
+                    labels: ['1월', '2월', '3월'],
+                    comments: [145, 152, 138],
+                    patterns: [42, 48, 35]
+                },
+                year: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    comments: [435, 520, 380, 670],
+                    patterns: [125, 180, 150, 230]
+                }
+            };
+
+            const data = newData[range];
+            
+            trendChart.data.labels = data.labels;
+            trendChart.data.datasets[0].data = data.comments;
+            trendChart.data.datasets[1].data = data.patterns;
+            trendChart.update();
+        }
+
+        // 차트 타입 변경
+        function changeChartType(type) {
+            trendChart.config.type = type;
+            trendChart.update();
+        }
+
+        // 패턴 상세 보기
+        function showPatternDetails(patternId) {
+            const patterns = {
+                'pipe-interference': {
+                    title: '파이프 라인 간섭 패턴',
+                    description: '엔진실 설계 변경 시 냉각수 파이프와 연료 공급 라인 간의 간섭이 반복적으로 발생하고 있습니다.',
+                    frequency: '15회 (최근 3개월)',
+                    impact: '평균 2.5일 지연, 추가 비용 15% 발생',
+                    recommendation: '설계 초기 단계에서 3D 시뮬레이션을 통한 사전 검증 필요'
+                },
+                'friday-spike': {
+                    title: '금요일 코멘트 급증 패턴',
+                    description: '매주 금요일 오후 2시-5시 사이에 코멘트 등록이 급증하는 패턴이 관찰됩니다.',
+                    frequency: '매주 반복',
+                    impact: '처리 지연 40% 증가, 주말 근무 발생',
+                    recommendation: '금요일 오후 인력 배치 강화 및 사전 검토 프로세스 도입'
+                },
+                'standard-response': {
+                    title: '표준 답변 효과 패턴',
+                    description: '표준 답변을 적용한 코멘트 유형의 처리 시간이 현저히 단축되었습니다.',
+                    frequency: '지속적 개선',
+                    impact: '처리 시간 60% 단축, 일관성 95% 향상',
+                    recommendation: '추가 코멘트 유형에 대한 표준 답변 개발 확대'
+                }
+            };
+
+            const pattern = patterns[patternId];
+            alert(`${pattern.title}\n\n${pattern.description}\n\n빈도: ${pattern.frequency}\n영향: ${pattern.impact}\n권장사항: ${pattern.recommendation}`);
+        }
+
+        // 히트맵 상세 보기
+        function showHeatmapDetails() {
+            alert('히트맵 상세 분석 화면을 엽니다.\n\n• 선주별 코멘트 패턴 분석\n• 카테고리별 트렌드\n• 시간대별 분포\n• 상관관계 분석');
+        }
+
+        // AI 추천 사항 구현
+        function implementAutomation() {
+            alert('자동화 구현을 시작합니다.\n\n1. 3D 모델링 API 연동\n2. 간섭 체크 알고리즘 적용\n3. 자동 알림 시스템 구축\n\n예상 완료: 2주');
+        }
+
+        function applyGuideline() {
+            alert('안전 간격 가이드라인을 적용합니다.\n\n• 설계 템플릿 업데이트\n• 체크리스트 자동화\n• 교육 자료 배포');
+        }
+
+        function optimizeResource() {
+            alert('리소스 최적화 계획을 수립합니다.\n\n• 금요일 오후 인력 20% 증가\n• 우선순위 기반 업무 배정\n• 예측 기반 사전 준비');
+        }
+
+        // 리포트 내보내기
+        function exportReport() {
+            alert('분석 리포트를 내보냅니다.\n\n포함 내용:\n• 패턴 분석 결과\n• AI 추천 사항\n• 성과 지표\n• 예측 분석\n\n형식: PDF, Excel');
+        }
+
+        function goBack() {
+            alert('이전 화면으로 돌아갑니다.');
+        }
+
+        // 실시간 데이터 업데이트 시뮬레이션
+        function simulateRealTimeUpdate() {
+            // 랜덤하게 지표 업데이트
+            const indicators = document.querySelectorAll('.text-2xl.font-bold');
+            indicators.forEach(indicator => {
+                if (indicator.textContent.includes('개')) {
+                    const current = parseInt(indicator.textContent);
+                    const change = Math.floor(Math.random() * 3) - 1; // -1, 0, 1
+                    if (current + change > 0) {
+                        indicator.textContent = (current + change) + '개';
+                    }
+                }
+            });
+        }
+
+        // 30초마다 실시간 업데이트
+        setInterval(simulateRealTimeUpdate, 30000);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9915107fc306e9fc',t:'MTc2MDkyNzEyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

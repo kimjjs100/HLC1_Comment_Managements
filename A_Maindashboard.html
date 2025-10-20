@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대선주 코멘트 대응 관리 시스템 - Main Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .notification-popup {
+            animation: slideInRight 0.3s ease-out;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .status-card {
+            transition: all 0.3s ease;
+        }
+        .status-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-full">
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold text-gray-900">대선주 코멘트 대응 관리 시스템</h1>
+                    <span class="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">Main Dashboard</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button class="p-2 text-gray-400 hover:text-gray-500 relative">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M9 11h.01"></path>
+                            </svg>
+                            <span class="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full pulse-dot"></span>
+                        </button>
+                    </div>
+                    <div class="text-sm text-gray-500">관리자</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- 신규 코멘트 알림 Pop-up -->
+        <div id="newCommentNotification" class="fixed top-20 right-6 bg-white border-l-4 border-orange-500 rounded-lg shadow-lg p-4 notification-popup z-50 max-w-sm">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg class="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <div class="ml-3 flex-1">
+                    <h3 class="text-sm font-medium text-gray-900">신규 코멘트 알림</h3>
+                    <p class="mt-1 text-sm text-gray-600">현대중공업 - 선박 설계 변경 요청</p>
+                    <p class="mt-1 text-xs text-gray-500">우선순위: 높음 | 2분 전</p>
+                </div>
+                <button onclick="closeNotification()" class="ml-4 text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- 답변 추천 알림 -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div class="flex-1">
+                    <h3 class="text-sm font-medium text-blue-900">유사 코멘트 자동 제안</h3>
+                    <p class="text-sm text-blue-700">3건의 유사한 이전 사례를 발견했습니다. 표준 답변을 확인하세요.</p>
+                </div>
+                <button class="ml-4 px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">확인</button>
+            </div>
+        </div>
+
+        <!-- 빠른 필터/검색 바 -->
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+            <div class="flex flex-wrap gap-4 items-center">
+                <div class="flex-1 min-w-64">
+                    <input type="text" placeholder="코멘트 검색..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <option>전체 선주</option>
+                    <option>현대중공업</option>
+                    <option>대우조선해양</option>
+                    <option>삼성중공업</option>
+                </select>
+                <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <option>전체 프로젝트</option>
+                    <option>컨테이너선 A</option>
+                    <option>유조선 B</option>
+                    <option>LNG선 C</option>
+                </select>
+                <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <option>전체 상태</option>
+                    <option>신규</option>
+                    <option>진행중</option>
+                    <option>완료</option>
+                    <option>보류</option>
+                </select>
+                <button class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">검색</button>
+            </div>
+        </div>
+
+        <!-- 진행 현황 요약 그래프 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <!-- 상태별 통계 카드 -->
+            <div class="lg:col-span-1">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white rounded-lg shadow p-4 status-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">전체 코멘트</p>
+                                <p class="text-2xl font-bold text-gray-900">1,247</p>
+                            </div>
+                            <div class="p-3 bg-blue-100 rounded-full">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 status-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">진행중</p>
+                                <p class="text-2xl font-bold text-orange-600">89</p>
+                            </div>
+                            <div class="p-3 bg-orange-100 rounded-full">
+                                <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 status-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">완료</p>
+                                <p class="text-2xl font-bold text-green-600">1,098</p>
+                            </div>
+                            <div class="p-3 bg-green-100 rounded-full">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 status-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">보류</p>
+                                <p class="text-2xl font-bold text-red-600">60</p>
+                            </div>
+                            <div class="p-3 bg-red-100 rounded-full">
+                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 일자별 처리 트렌드 차트 -->
+            <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">일자별 처리 트렌드</h3>
+                <canvas id="trendChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- 리스크 알림 영역 & 실시간 업데이트 패널 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- 리스크 알림 영역 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                    <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    리스크 알림
+                </h3>
+                
+                <div class="space-y-3">
+                    <div class="border-l-4 border-red-500 bg-red-50 p-3 rounded">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-red-800">마감 임박 (D-1)</p>
+                                <p class="text-sm text-red-700">현대중공업 - 엔진실 배치 변경</p>
+                            </div>
+                            <span class="px-2 py-1 bg-red-200 text-red-800 text-xs rounded-full">긴급</span>
+                        </div>
+                    </div>
+                    
+                    <div class="border-l-4 border-orange-500 bg-orange-50 p-3 rounded">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-orange-800">마감 임박 (D-3)</p>
+                                <p class="text-sm text-orange-700">삼성중공업 - 안전 규정 검토</p>
+                            </div>
+                            <span class="px-2 py-1 bg-orange-200 text-orange-800 text-xs rounded-full">주의</span>
+                        </div>
+                    </div>
+                    
+                    <div class="border-l-4 border-purple-500 bg-purple-50 p-3 rounded">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-purple-800">SLA 초과</p>
+                                <p class="text-sm text-purple-700">대우조선해양 - 설계 승인 지연</p>
+                            </div>
+                            <span class="px-2 py-1 bg-purple-200 text-purple-800 text-xs rounded-full">지연</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 실시간 업데이트 패널 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                    <div class="w-3 h-3 bg-green-500 rounded-full mr-2 pulse-dot"></div>
+                    실시간 업데이트
+                </h3>
+                
+                <div class="space-y-3 max-h-64 overflow-y-auto">
+                    <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-900">새 코멘트 등록</p>
+                            <p class="text-xs text-gray-500">현대중공업 - 선박 설계 변경 요청</p>
+                            <p class="text-xs text-gray-400">2분 전</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-900">코멘트 완료</p>
+                            <p class="text-xs text-gray-500">삼성중공업 - 안전 점검 완료</p>
+                            <p class="text-xs text-gray-400">5분 전</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                        <div class="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-900">상태 변경</p>
+                            <p class="text-xs text-gray-500">대우조선해양 - 검토중 → 승인요청</p>
+                            <p class="text-xs text-gray-400">8분 전</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-900">새 코멘트 등록</p>
+                            <p class="text-xs text-gray-500">현대중공업 - 품질 검사 요청</p>
+                            <p class="text-xs text-gray-400">12분 전</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 차트 초기화
+        const ctx = document.getElementById('trendChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['1/15', '1/16', '1/17', '1/18', '1/19', '1/20', '1/21'],
+                datasets: [{
+                    label: '처리 완료',
+                    data: [12, 19, 15, 25, 22, 18, 24],
+                    borderColor: 'rgb(34, 197, 94)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: '신규 등록',
+                    data: [8, 15, 12, 20, 18, 15, 21],
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+
+        // 알림 닫기 함수
+        function closeNotification() {
+            document.getElementById('newCommentNotification').style.display = 'none';
+        }
+
+        // 실시간 업데이트 시뮬레이션
+        function addRealTimeUpdate() {
+            const updates = [
+                { type: 'new', text: '새 코멘트 등록', detail: '현대중공업 - 설계 검토 요청', color: 'green' },
+                { type: 'complete', text: '코멘트 완료', detail: '삼성중공업 - 품질 검사 완료', color: 'blue' },
+                { type: 'status', text: '상태 변경', detail: '대우조선해양 - 진행중 → 완료', color: 'orange' }
+            ];
+            
+            const randomUpdate = updates[Math.floor(Math.random() * updates.length)];
+            const updatePanel = document.querySelector('.space-y-3.max-h-64');
+            
+            const newUpdate = document.createElement('div');
+            newUpdate.className = 'flex items-start space-x-3 p-2 hover:bg-gray-50 rounded';
+            newUpdate.innerHTML = `
+                <div class="w-2 h-2 bg-${randomUpdate.color}-500 rounded-full mt-2"></div>
+                <div class="flex-1">
+                    <p class="text-sm text-gray-900">${randomUpdate.text}</p>
+                    <p class="text-xs text-gray-500">${randomUpdate.detail}</p>
+                    <p class="text-xs text-gray-400">방금 전</p>
+                </div>
+            `;
+            
+            updatePanel.insertBefore(newUpdate, updatePanel.firstChild);
+            
+            // 오래된 업데이트 제거 (최대 10개 유지)
+            if (updatePanel.children.length > 10) {
+                updatePanel.removeChild(updatePanel.lastChild);
+            }
+        }
+
+        // 30초마다 실시간 업데이트 추가
+        setInterval(addRealTimeUpdate, 30000);
+
+        // 5초 후 알림 자동 닫기
+        setTimeout(() => {
+            closeNotification();
+        }, 5000);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99150240b565326b',t:'MTc2MDkyNjU0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

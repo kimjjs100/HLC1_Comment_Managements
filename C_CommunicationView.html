@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대선주 코멘트 대응 관리 시스템 - 협업 및 커뮤니케이션 뷰</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .chat-message {
+            animation: slideInUp 0.3s ease-out;
+        }
+        @keyframes slideInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .online-indicator {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .notification-badge {
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        .task-card {
+            transition: all 0.3s ease;
+        }
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .chat-container {
+            height: 400px;
+            overflow-y: auto;
+        }
+        .team-member {
+            transition: all 0.2s ease;
+        }
+        .team-member:hover {
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-full">
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <button onclick="goBack()" class="mr-4 p-2 text-gray-400 hover:text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-xl font-bold text-gray-900">협업 및 커뮤니케이션</h1>
+                    <span class="ml-3 px-2 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">실시간 협업</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button class="p-2 text-gray-400 hover:text-gray-500 relative">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
+                            </svg>
+                            <span class="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full notification-badge"></span>
+                        </button>
+                    </div>
+                    <button class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">새 회의 시작</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- 팀 멤버 및 상태 -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">팀 멤버</h3>
+                    
+                    <div class="space-y-3">
+                        <div class="team-member flex items-center space-x-3 p-2 rounded-lg cursor-pointer">
+                            <div class="relative">
+                                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-medium">김</span>
+                                </div>
+                                <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white online-indicator"></div>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">김철수</p>
+                                <p class="text-xs text-gray-500">설계팀 • 온라인</p>
+                            </div>
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        </div>
+                        
+                        <div class="team-member flex items-center space-x-3 p-2 rounded-lg cursor-pointer">
+                            <div class="relative">
+                                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-medium">이</span>
+                                </div>
+                                <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white online-indicator"></div>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">이영수</p>
+                                <p class="text-xs text-gray-500">안전팀 • 온라인</p>
+                            </div>
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        </div>
+                        
+                        <div class="team-member flex items-center space-x-3 p-2 rounded-lg cursor-pointer">
+                            <div class="relative">
+                                <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-medium">박</span>
+                                </div>
+                                <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full border-2 border-white"></div>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">박영희</p>
+                                <p class="text-xs text-gray-500">현대중공업 • 자리비움</p>
+                            </div>
+                            <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        </div>
+                        
+                        <div class="team-member flex items-center space-x-3 p-2 rounded-lg cursor-pointer">
+                            <div class="relative">
+                                <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-medium">최</span>
+                                </div>
+                                <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-gray-400 rounded-full border-2 border-white"></div>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">최민호</p>
+                                <p class="text-xs text-gray-500">품질팀 • 오프라인</p>
+                            </div>
+                            <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                        </div>
+                        
+                        <div class="team-member flex items-center space-x-3 p-2 rounded-lg cursor-pointer">
+                            <div class="relative">
+                                <div class="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-medium">정</span>
+                                </div>
+                                <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white online-indicator"></div>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">정수진</p>
+                                <p class="text-xs text-gray-500">프로젝트 매니저 • 온라인</p>
+                            </div>
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 빠른 액션 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">빠른 액션</h3>
+                    
+                    <div class="space-y-3">
+                        <button onclick="startVideoCall()" class="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            <span>화상 회의</span>
+                        </button>
+                        
+                        <button onclick="createTask()" class="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            <span>업무 할당</span>
+                        </button>
+                        
+                        <button onclick="shareFile()" class="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                            </svg>
+                            <span>파일 공유</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 메인 협업 영역 -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- 실시간 채팅 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">팀 채팅</h3>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-green-500 rounded-full online-indicator"></div>
+                            <span class="text-sm text-gray-500">4명 온라인</span>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-container border border-gray-200 rounded-lg p-4 mb-4">
+                        <div class="space-y-4" id="chatMessages">
+                            <div class="chat-message flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <span class="text-white text-xs font-medium">정</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-1">
+                                        <span class="text-sm font-medium text-gray-900">정수진</span>
+                                        <span class="text-xs text-gray-500">14:30</span>
+                                    </div>
+                                    <p class="text-sm text-gray-700 bg-gray-50 rounded-lg p-2">현대중공업 코멘트 CM-2024-0156 관련해서 긴급 회의가 필요합니다. 마감이 내일이라 오늘 중으로 해결해야 해요.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-message flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <span class="text-white text-xs font-medium">김</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-1">
+                                        <span class="text-sm font-medium text-gray-900">김철수</span>
+                                        <span class="text-xs text-gray-500">14:32</span>
+                                    </div>
+                                    <p class="text-sm text-gray-700 bg-gray-50 rounded-lg p-2">네, 3D 모델링 검토 완료했습니다. 파이프 라인 간섭 문제 해결 방안 3가지 준비했어요.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-message flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <span class="text-white text-xs font-medium">이</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-1">
+                                        <span class="text-sm font-medium text-gray-900">이영수</span>
+                                        <span class="text-xs text-gray-500">14:35</span>
+                                    </div>
+                                    <p class="text-sm text-gray-700 bg-gray-50 rounded-lg p-2">안전 규정 검토도 완료했습니다. 700mm 간격으로 가면 모든 규정을 만족합니다.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-message flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <span class="text-white text-xs font-medium">박</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-1">
+                                        <span class="text-sm font-medium text-gray-900">박영희</span>
+                                        <span class="text-xs text-gray-500">14:38</span>
+                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">외부</span>
+                                    </div>
+                                    <p class="text-sm text-gray-700 bg-blue-50 rounded-lg p-2">좋습니다. 700mm 간격으로 진행해주세요. 추가 비용은 승인하겠습니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form onsubmit="sendMessage(event)" class="flex space-x-3">
+                        <input type="text" id="chatInput" placeholder="메시지를 입력하세요..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">전송</button>
+                    </form>
+                </div>
+
+                <!-- 공유 화이트보드 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">공유 화이트보드</h3>
+                        <div class="flex space-x-2">
+                            <button onclick="clearWhiteboard()" class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300">지우기</button>
+                            <button onclick="saveWhiteboard()" class="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700">저장</button>
+                        </div>
+                    </div>
+                    
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50">
+                        <canvas id="whiteboard" width="600" height="300" class="border border-gray-300 rounded bg-white mx-auto cursor-crosshair"></canvas>
+                        <p class="text-sm text-gray-500 mt-2">마우스로 그리거나 스케치할 수 있습니다</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 업무 할당 및 진행 상황 -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- 할당된 업무 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">할당된 업무</h3>
+                    
+                    <div class="space-y-3">
+                        <div class="task-card border border-gray-200 rounded-lg p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium text-gray-900">파이프 라인 재설계</span>
+                                <span class="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full">진행중</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2">담당: 김철수</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-500">마감: 내일</span>
+                                <div class="w-16 h-1 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="w-3/4 h-full bg-orange-500"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="task-card border border-gray-200 rounded-lg p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium text-gray-900">안전 규정 검토</span>
+                                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">완료</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2">담당: 이영수</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-500">완료됨</span>
+                                <div class="w-16 h-1 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="w-full h-full bg-green-500"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="task-card border border-gray-200 rounded-lg p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium text-gray-900">비용 산정</span>
+                                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">대기</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2">담당: 정수진</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-500">시작 예정</span>
+                                <div class="w-16 h-1 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="w-1/4 h-full bg-blue-500"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="showTaskModal()" class="mt-4 w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 hover:text-gray-700">
+                        + 새 업무 할당
+                    </button>
+                </div>
+
+                <!-- 회의 일정 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">회의 일정</h3>
+                    
+                    <div class="space-y-3">
+                        <div class="border-l-4 border-red-500 bg-red-50 p-3 rounded">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-sm font-medium text-red-800">긴급 검토 회의</span>
+                                <span class="text-xs text-red-600">15:00</span>
+                            </div>
+                            <p class="text-xs text-red-700">CM-2024-0156 파이프 라인 이슈</p>
+                            <div class="flex items-center mt-2 space-x-1">
+                                <div class="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-xs">김</span>
+                                </div>
+                                <div class="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-xs">이</span>
+                                </div>
+                                <div class="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-xs">정</span>
+                                </div>
+                                <span class="text-xs text-gray-500">+1</span>
+                            </div>
+                        </div>
+                        
+                        <div class="border-l-4 border-blue-500 bg-blue-50 p-3 rounded">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-sm font-medium text-blue-800">주간 진행 회의</span>
+                                <span class="text-xs text-blue-600">내일 10:00</span>
+                            </div>
+                            <p class="text-xs text-blue-700">전체 프로젝트 진행 상황 점검</p>
+                        </div>
+                        
+                        <div class="border-l-4 border-green-500 bg-green-50 p-3 rounded">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-sm font-medium text-green-800">선주 미팅</span>
+                                <span class="text-xs text-green-600">금요일 14:00</span>
+                            </div>
+                            <p class="text-xs text-green-700">현대중공업과 최종 검토</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 파일 공유 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">최근 공유 파일</h3>
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3 p-2 border border-gray-200 rounded-lg">
+                            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <p class="text-xs font-medium text-gray-900">설계변경안_v3.pdf</p>
+                                <p class="text-xs text-gray-500">김철수 • 10분 전</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3 p-2 border border-gray-200 rounded-lg">
+                            <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <p class="text-xs font-medium text-gray-900">안전검토서.docx</p>
+                                <p class="text-xs text-gray-500">이영수 • 30분 전</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3 p-2 border border-gray-200 rounded-lg">
+                            <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <p class="text-xs font-medium text-gray-900">비용산정.xlsx</p>
+                                <p class="text-xs text-gray-500">정수진 • 1시간 전</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 업무 할당 모달 -->
+    <div id="taskModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">새 업무 할당</h3>
+            
+            <form onsubmit="assignTask(event)">
+                <div class="mb-4">
+                    <label for="taskTitle" class="block text-sm font-medium text-gray-700 mb-2">업무 제목</label>
+                    <input type="text" id="taskTitle" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="taskAssignee" class="block text-sm font-medium text-gray-700 mb-2">담당자</label>
+                    <select id="taskAssignee" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        <option value="김철수">김철수 (설계팀)</option>
+                        <option value="이영수">이영수 (안전팀)</option>
+                        <option value="최민호">최민호 (품질팀)</option>
+                        <option value="정수진">정수진 (PM)</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="taskDeadline" class="block text-sm font-medium text-gray-700 mb-2">마감일</label>
+                    <input type="date" id="taskDeadline" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="taskPriority" class="block text-sm font-medium text-gray-700 mb-2">우선순위</label>
+                    <select id="taskPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        <option value="낮음">낮음</option>
+                        <option value="보통">보통</option>
+                        <option value="높음">높음</option>
+                        <option value="긴급">긴급</option>
+                    </select>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button type="button" onclick="closeTaskModal()" class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">취소</button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">할당</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 화이트보드 기능
+        const canvas = document.getElementById('whiteboard');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.strokeStyle = '#6366f1';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+        });
+
+        canvas.addEventListener('mouseup', () => isDrawing = false);
+        canvas.addEventListener('mouseout', () => isDrawing = false);
+
+        function clearWhiteboard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function saveWhiteboard() {
+            alert('화이트보드가 저장되었습니다!');
+        }
+
+        // 채팅 기능
+        function sendMessage(event) {
+            event.preventDefault();
+            
+            const chatInput = document.getElementById('chatInput');
+            const message = chatInput.value.trim();
+            
+            if (!message) return;
+            
+            const chatMessages = document.getElementById('chatMessages');
+            const now = new Date();
+            const timeString = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = 'chat-message flex items-start space-x-3';
+            messageElement.innerHTML = `
+                <div class="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-white text-xs font-medium">나</span>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center space-x-2 mb-1">
+                        <span class="text-sm font-medium text-gray-900">나 (현재 사용자)</span>
+                        <span class="text-xs text-gray-500">${timeString}</span>
+                    </div>
+                    <p class="text-sm text-gray-700 bg-indigo-50 rounded-lg p-2">${message}</p>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageElement);
+            chatInput.value = '';
+            
+            // 스크롤을 맨 아래로
+            const chatContainer = document.querySelector('.chat-container');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // 업무 할당 모달
+        function showTaskModal() {
+            document.getElementById('taskModal').classList.remove('hidden');
+            document.getElementById('taskModal').classList.add('flex');
+        }
+
+        function closeTaskModal() {
+            document.getElementById('taskModal').classList.add('hidden');
+            document.getElementById('taskModal').classList.remove('flex');
+        }
+
+        function assignTask(event) {
+            event.preventDefault();
+            
+            const title = document.getElementById('taskTitle').value;
+            const assignee = document.getElementById('taskAssignee').value;
+            const deadline = document.getElementById('taskDeadline').value;
+            const priority = document.getElementById('taskPriority').value;
+            
+            alert(`업무가 할당되었습니다!\n제목: ${title}\n담당자: ${assignee}\n마감일: ${deadline}\n우선순위: ${priority}`);
+            
+            closeTaskModal();
+            
+            // 폼 초기화
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskDeadline').value = '';
+        }
+
+        // 빠른 액션 함수들
+        function startVideoCall() {
+            alert('화상 회의를 시작합니다. 참여자들에게 알림을 보냈습니다.');
+        }
+
+        function createTask() {
+            showTaskModal();
+        }
+
+        function shareFile() {
+            alert('파일 공유 창을 엽니다.');
+        }
+
+        function goBack() {
+            alert('이전 화면으로 돌아갑니다.');
+        }
+
+        // 실시간 업데이트 시뮬레이션
+        function simulateRealTimeActivity() {
+            const activities = [
+                { user: '김철수', message: '설계 변경안 업데이트 완료했습니다.', initial: '김', color: 'blue' },
+                { user: '이영수', message: '안전 검토 결과를 공유했습니다.', initial: '이', color: 'green' },
+                { user: '정수진', message: '회의 시간을 15:30으로 변경합니다.', initial: '정', color: 'red' }
+            ];
+            
+            const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+            const chatMessages = document.getElementById('chatMessages');
+            const now = new Date();
+            const timeString = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = 'chat-message flex items-start space-x-3';
+            messageElement.innerHTML = `
+                <div class="w-8 h-8 bg-${randomActivity.color}-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-white text-xs font-medium">${randomActivity.initial}</span>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center space-x-2 mb-1">
+                        <span class="text-sm font-medium text-gray-900">${randomActivity.user}</span>
+                        <span class="text-xs text-gray-500">${timeString}</span>
+                    </div>
+                    <p class="text-sm text-gray-700 bg-gray-50 rounded-lg p-2">${randomActivity.message}</p>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageElement);
+            
+            const chatContainer = document.querySelector('.chat-container');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // 45초마다 실시간 활동 시뮬레이션
+        setInterval(simulateRealTimeActivity, 45000);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99150cf23037e9fc',t:'MTc2MDkyNjk3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
